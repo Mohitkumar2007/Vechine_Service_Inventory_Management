@@ -18,6 +18,36 @@ frontend/   React dashboard UI
 
 ## Setup
 
+### Windows automatic setup
+
+Use Command Prompt or PowerShell:
+
+```powershell
+.\setup_windows.bat
+```
+
+Or use Git Bash:
+
+```bash
+./setup_windows.sh
+```
+
+The setup script asks for MySQL host, port, database name, username, and password. It writes `.env`, tests the MySQL connection, imports `database/mysql_schema.sql`, installs backend/frontend dependencies, and can start both servers.
+
+To run the project later:
+
+```powershell
+.\run_windows.bat
+```
+
+or:
+
+```bash
+./run_windows.sh
+```
+
+### Manual setup
+
 1. Create a local `.env` from `.env.example` and set your MySQL password.
 2. Create/import the database:
 
@@ -54,4 +84,3 @@ billing / billing123
 ## Push Notes
 
 Do not commit `.env`, `DB_venv`, `node_modules`, `dist`, logs, or Python cache folders. They are ignored by the root `.gitignore`.
-
