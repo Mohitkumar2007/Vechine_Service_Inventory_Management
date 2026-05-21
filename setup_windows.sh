@@ -105,12 +105,35 @@ fi
 echo "Installing frontend dependencies..."
 (
   cd frontend
+  if ! command -v node >/dev/null 2>&1; then
+    echo "ERROR: Node.js was not found. Install Node.js 20 or newer, then rerun setup." >&2
+    echo "Ubuntu/Azure recommended:" >&2
+    echo "  curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -" >&2
+    echo "  sudo apt install -y nodejs" >&2
+    exit 1
+  fi
+
+  NODE_MAJOR="$(node -p "Number(process.versions.node.split('.')[0])")"
+  if (( NODE_MAJOR < 20 )); then
+    echo "ERROR: Node.js 20 or newer is required for this frontend." >&2
+    echo "Current Node version: $(node -v)" >&2
+    echo "Upgrade on Ubuntu/Azure with:" >&2
+    echo "  curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -" >&2
+    echo "  sudo apt install -y nodejs" >&2
+    echo "Then rerun: bash setup_windows.sh" >&2
+    exit 1
+  fi
+
   npm install --include=optional
   if [[ "$OSTYPE" == linux* ]]; then
     if ! node -e "require('@tailwindcss/oxide')" >/dev/null 2>&1; then
       echo "Tailwind native binding is missing. Reinstalling frontend dependencies for Linux..."
-      rm -rf node_modules package-lock.json
-      npm install --include=optional
+      rm -rf node_modules
+      if [[ -f package-lock.json ]]; then
+        npm ci --include=optional
+      else
+        npm install --include=optional
+      fi
     fi
   fi
 )
@@ -119,5 +142,5 @@ echo
 echo "Setup completed successfully."
 read -r -p "Start backend and frontend now? [Y/N]: " START_NOW
 if [[ "$START_NOW" =~ ^[Yy]$ ]]; then
-  "$ROOT_DIR/run_windows.sh"
+  bash "$ROOT_DIR/run_windows.sh"
 fi

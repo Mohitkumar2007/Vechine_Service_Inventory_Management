@@ -36,7 +36,9 @@ On Azure/Linux, the same `.sh` script works. Install system prerequisites first 
 
 ```bash
 sudo apt update
-sudo apt install -y python3 python3-venv python3-pip nodejs npm
+sudo apt install -y python3 python3-venv python3-pip curl
+curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
+sudo apt install -y nodejs
 bash setup_windows.sh
 ```
 
@@ -76,9 +78,17 @@ If `npm run dev` fails on Azure with `Cannot find native binding` from `@tailwin
 
 ```bash
 cd frontend
-rm -rf node_modules package-lock.json
-npm install --include=optional
+node -v
+rm -rf node_modules
+npm ci --include=optional
 npm run dev -- --host 0.0.0.0
+```
+
+The frontend requires Node.js 20 or newer. If `node -v` shows `v18...`, upgrade Node first:
+
+```bash
+curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
+sudo apt install -y nodejs
 ```
 
 ### Manual setup
