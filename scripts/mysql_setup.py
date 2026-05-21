@@ -4,6 +4,7 @@ import sys
 from pathlib import Path
 
 import pymysql
+from pymysql.constants import ER
 
 
 def split_sql(script: str) -> list[str]:
@@ -104,7 +105,19 @@ def main() -> int:
                 if statement.upper().startswith("CREATE TRIGGER TRG_SERVICE_PARTS_STOCK_MYSQL"):
                     cursor.execute("DROP TRIGGER IF EXISTS trg_service_parts_stock_mysql")
                 cursor.execute(statement)
-    except Exception as exc:
+    except pymysql.MySQLError as exc:
+        code = exc.args[0] if exc.args else None
+        if code == ER.DBACCESS_DENIED_ERROR:
+            print("ERROR: MySQL login worked, but this user cannot access/create the selected database.", file=sys.stderr)
+            print(f"DETAIL: {exc}", file=sys.stderr)
+            print("", file=sys.stderr)
+            print("Fix this on the MySQL server with an admin/root user:", file=sys.stderr)
+            print(f"  CREATE DATABASE IF NOT EXISTS `{args.database}` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;", file=sys.stderr)
+            print(f"  GRANT ALL PRIVILEGES ON `{args.database}`.* TO '{args.user}'@'%';", file=sys.stderr)
+            print("  FLUSH PRIVILEGES;", file=sys.stderr)
+            print("", file=sys.stderr)
+            print("Then rerun the setup script with the same database name.", file=sys.stderr)
+            return 3
         print("ERROR: MySQL connection worked, but schema setup failed.", file=sys.stderr)
         print(f"DETAIL: {exc}", file=sys.stderr)
         return 3

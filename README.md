@@ -48,6 +48,16 @@ mysql -h 15.134.39.121 -P 3306 -u mohit -p
 
 It writes `.env`, tests the MySQL connection, imports `database/mysql_schema.sql`, installs backend/frontend dependencies, and can start both servers. If your hosted MySQL requires encrypted connections, answer `Y` when the script asks about SSL.
 
+If setup says `Access denied ... to database 'vehicle_service_db'`, the password is correct but the MySQL user does not have database privileges. Run this once on the MySQL server using an admin/root account:
+
+```sql
+CREATE DATABASE IF NOT EXISTS vehicle_service_db CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+GRANT ALL PRIVILEGES ON vehicle_service_db.* TO 'mohit'@'%';
+FLUSH PRIVILEGES;
+```
+
+Then rerun `bash setup_windows.sh`.
+
 To run the project later:
 
 ```powershell
