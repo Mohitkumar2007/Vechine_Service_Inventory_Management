@@ -66,7 +66,7 @@ if errorlevel 1 (
 
 echo Installing frontend dependencies...
 pushd frontend
-npm install
+npm install --include=optional
 if errorlevel 1 (
   popd
   echo ERROR: Frontend dependency installation failed.

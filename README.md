@@ -72,6 +72,15 @@ or:
 
 On Linux/Azure, `run_windows.sh` starts the backend on `0.0.0.0:8000` and the frontend on `0.0.0.0:3000` in the background.
 
+If `npm run dev` fails on Azure with `Cannot find native binding` from `@tailwindcss/oxide`, reinstall frontend dependencies on the Linux server:
+
+```bash
+cd frontend
+rm -rf node_modules package-lock.json
+npm install --include=optional
+npm run dev -- --host 0.0.0.0
+```
+
 ### Manual setup
 
 1. Create a local `.env` from `.env.example` and set your MySQL password.

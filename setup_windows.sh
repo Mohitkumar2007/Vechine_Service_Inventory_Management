@@ -103,7 +103,17 @@ if ! "$VENV_PYTHON" scripts/mysql_setup.py \
 fi
 
 echo "Installing frontend dependencies..."
-(cd frontend && npm install)
+(
+  cd frontend
+  npm install --include=optional
+  if [[ "$OSTYPE" == linux* ]]; then
+    if ! node -e "require('@tailwindcss/oxide')" >/dev/null 2>&1; then
+      echo "Tailwind native binding is missing. Reinstalling frontend dependencies for Linux..."
+      rm -rf node_modules package-lock.json
+      npm install --include=optional
+    fi
+  fi
+)
 
 echo
 echo "Setup completed successfully."
