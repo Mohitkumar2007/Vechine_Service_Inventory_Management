@@ -32,6 +32,14 @@ Or use Git Bash:
 ./setup_windows.sh
 ```
 
+On Azure/Linux, the same `.sh` script works. Install system prerequisites first if needed:
+
+```bash
+sudo apt update
+sudo apt install -y python3 python3-venv python3-pip nodejs npm
+bash setup_windows.sh
+```
+
 The setup script asks for MySQL host, port, database name, username, and password. The default hosted MySQL target is `15.134.39.121:3306` with username `mohit`, matching:
 
 ```bash
@@ -51,6 +59,8 @@ or:
 ```bash
 ./run_windows.sh
 ```
+
+On Linux/Azure, `run_windows.sh` starts the backend on `0.0.0.0:8000` and the frontend on `0.0.0.0:3000` in the background.
 
 ### Manual setup
 

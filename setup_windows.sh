@@ -7,6 +7,12 @@ cd "$ROOT_DIR"
 echo "Vehicle Service Inventory Management System - Windows Git Bash Setup"
 echo
 
+if [[ "$OSTYPE" == linux* ]]; then
+  echo "Linux/Azure environment detected."
+else
+  echo "Windows Git Bash environment detected."
+fi
+
 read -r -p "MySQL host [15.134.39.121]: " MYSQL_HOST
 MYSQL_HOST="${MYSQL_HOST:-15.134.39.121}"
 
@@ -29,16 +35,36 @@ if [[ "$MYSQL_SSL_INPUT" =~ ^[Yy]$ ]]; then
 fi
 
 echo "Creating Python virtual environment if needed..."
-if [[ ! -x "DB_venv/Scripts/python.exe" ]]; then
-  if command -v py >/dev/null 2>&1; then
+if [[ -x "DB_venv/Scripts/python.exe" ]]; then
+  VENV_PYTHON="DB_venv/Scripts/python.exe"
+elif [[ -x "DB_venv/bin/python" ]]; then
+  VENV_PYTHON="DB_venv/bin/python"
+else
+  if command -v python3 >/dev/null 2>&1; then
+    python3 -m venv DB_venv
+  elif command -v py >/dev/null 2>&1; then
     py -3 -m venv DB_venv
-  else
+  elif command -v python >/dev/null 2>&1; then
     python -m venv DB_venv
+  else
+    echo "ERROR: Python was not found. Install python3 and python3-venv, then rerun this script." >&2
+    echo "Ubuntu/Debian: sudo apt update && sudo apt install -y python3 python3-venv python3-pip nodejs npm" >&2
+    exit 1
+  fi
+
+  if [[ -x "DB_venv/Scripts/python.exe" ]]; then
+    VENV_PYTHON="DB_venv/Scripts/python.exe"
+  elif [[ -x "DB_venv/bin/python" ]]; then
+    VENV_PYTHON="DB_venv/bin/python"
+  else
+    echo "ERROR: Virtual environment was created, but Python executable was not found inside DB_venv." >&2
+    exit 1
   fi
 fi
 
 echo "Installing backend dependencies..."
-"DB_venv/Scripts/python.exe" -m pip install -r backend/requirements.txt
+"$VENV_PYTHON" -m pip install --upgrade pip
+"$VENV_PYTHON" -m pip install -r backend/requirements.txt
 
 echo "Writing local .env file..."
 cat > .env <<EOF
@@ -63,7 +89,7 @@ if [[ "$MYSQL_SSL" == "true" ]]; then
   MYSQL_SSL_ARGS+=(--ssl)
 fi
 
-if ! "DB_venv/Scripts/python.exe" scripts/mysql_setup.py \
+if ! "$VENV_PYTHON" scripts/mysql_setup.py \
   --host "$MYSQL_HOST" \
   --port "$MYSQL_PORT" \
   --user "$MYSQL_USER" \
