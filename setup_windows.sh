@@ -7,8 +7,8 @@ cd "$ROOT_DIR"
 echo "Vehicle Service Inventory Management System - Windows Git Bash Setup"
 echo
 
-read -r -p "MySQL host [localhost]: " MYSQL_HOST
-MYSQL_HOST="${MYSQL_HOST:-localhost}"
+read -r -p "MySQL host [15.134.39.121]: " MYSQL_HOST
+MYSQL_HOST="${MYSQL_HOST:-15.134.39.121}"
 
 read -r -p "MySQL port [3306]: " MYSQL_PORT
 MYSQL_PORT="${MYSQL_PORT:-3306}"
@@ -16,11 +16,17 @@ MYSQL_PORT="${MYSQL_PORT:-3306}"
 read -r -p "MySQL database [vehicle_service_db]: " MYSQL_DATABASE
 MYSQL_DATABASE="${MYSQL_DATABASE:-vehicle_service_db}"
 
-read -r -p "MySQL username [root]: " MYSQL_USER
-MYSQL_USER="${MYSQL_USER:-root}"
+read -r -p "MySQL username [mohit]: " MYSQL_USER
+MYSQL_USER="${MYSQL_USER:-mohit}"
 
 read -r -s -p "MySQL password: " MYSQL_PASSWORD
 echo
+
+read -r -p "Use SSL for hosted MySQL? [Y/N, default N]: " MYSQL_SSL_INPUT
+MYSQL_SSL=false
+if [[ "$MYSQL_SSL_INPUT" =~ ^[Yy]$ ]]; then
+  MYSQL_SSL=true
+fi
 
 echo "Creating Python virtual environment if needed..."
 if [[ ! -x "DB_venv/Scripts/python.exe" ]]; then
@@ -43,6 +49,7 @@ MYSQL_USER=$MYSQL_USER
 MYSQL_PASSWORD=$MYSQL_PASSWORD
 MYSQL_HOST=$MYSQL_HOST
 MYSQL_PORT=$MYSQL_PORT
+MYSQL_SSL=$MYSQL_SSL
 MySQL_database=$MYSQL_DATABASE
 MySQL_user=$MYSQL_USER
 MySQL_password=$MYSQL_PASSWORD
@@ -51,12 +58,18 @@ MySQL_port=$MYSQL_PORT
 EOF
 
 echo "Testing MySQL connection and preparing schema..."
+MYSQL_SSL_ARGS=()
+if [[ "$MYSQL_SSL" == "true" ]]; then
+  MYSQL_SSL_ARGS+=(--ssl)
+fi
+
 if ! "DB_venv/Scripts/python.exe" scripts/mysql_setup.py \
   --host "$MYSQL_HOST" \
   --port "$MYSQL_PORT" \
   --user "$MYSQL_USER" \
   --password "$MYSQL_PASSWORD" \
-  --database "$MYSQL_DATABASE"; then
+  --database "$MYSQL_DATABASE" \
+  "${MYSQL_SSL_ARGS[@]}"; then
   echo
   echo "ERROR: Setup stopped because MySQL connection/schema setup failed." >&2
   echo "Check that MySQL is running and the username/password are correct." >&2

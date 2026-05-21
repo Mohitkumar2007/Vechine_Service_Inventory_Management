@@ -65,13 +65,14 @@ def main() -> int:
     parser.add_argument("--password", default="")
     parser.add_argument("--database", default="vehicle_service_db")
     parser.add_argument("--schema", default="database/mysql_schema.sql")
+    parser.add_argument("--ssl", action="store_true", help="Use SSL for hosted MySQL connections.")
     args = parser.parse_args()
 
     try:
-      port = int(args.port)
+        port = int(args.port)
     except ValueError:
-      print(f"ERROR: Invalid MySQL port: {args.port}", file=sys.stderr)
-      return 2
+        print(f"ERROR: Invalid MySQL port: {args.port}", file=sys.stderr)
+        return 2
 
     try:
         connection = pymysql.connect(
@@ -81,6 +82,7 @@ def main() -> int:
             password=args.password,
             autocommit=True,
             charset="utf8mb4",
+            ssl={} if args.ssl else None,
         )
     except Exception as exc:
         print("ERROR: Could not connect to MySQL with the provided credentials.", file=sys.stderr)

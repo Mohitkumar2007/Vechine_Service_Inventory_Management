@@ -8,7 +8,11 @@ load_dotenv(PROJECT_ROOT / '.env')
 
 SECRET_KEY = os.getenv('DJANGO_SECRET_KEY', 'dbms-project-dev-key')
 DEBUG = os.getenv('DJANGO_DEBUG', 'true').lower() == 'true'
-ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'upchuck-sneer-yeah.ngrok-free.dev']
+ALLOWED_HOSTS = [
+    host.strip()
+    for host in os.getenv('DJANGO_ALLOWED_HOSTS', 'localhost,127.0.0.1,upchuck-sneer-yeah.ngrok-free.dev').split(',')
+    if host.strip()
+]
 
 INSTALLED_APPS = [
     'django.contrib.auth',
@@ -45,6 +49,14 @@ MYSQL_PASSWORD = os.getenv('MySQL_password', os.getenv('MYSQL_PASSWORD', os.gete
 MYSQL_HOST = os.getenv('MySQL_host', os.getenv('MYSQL_HOST', 'localhost')).strip('"')
 MYSQL_PORT = os.getenv('MySQL_port', os.getenv('MYSQL_PORT', '3306')).strip('"')
 MYSQL_DATABASE = os.getenv('MySQL_database', os.getenv('MYSQL_DATABASE', 'vehicle_service_db')).strip('"')
+MYSQL_SSL = os.getenv('MYSQL_SSL', 'false').strip('"').lower() in {'1', 'true', 'yes', 'y'}
+
+MYSQL_OPTIONS = {
+    'charset': 'utf8mb4',
+    'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
+}
+if MYSQL_SSL:
+    MYSQL_OPTIONS['ssl'] = {}
 
 DATABASES = {
     'default': {
@@ -54,10 +66,7 @@ DATABASES = {
         'PASSWORD': MYSQL_PASSWORD,
         'HOST': MYSQL_HOST,
         'PORT': MYSQL_PORT,
-        'OPTIONS': {
-            'charset': 'utf8mb4',
-            'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
-        },
+        'OPTIONS': MYSQL_OPTIONS,
     }
 }
 

@@ -32,7 +32,13 @@ Or use Git Bash:
 ./setup_windows.sh
 ```
 
-The setup script asks for MySQL host, port, database name, username, and password. It writes `.env`, tests the MySQL connection, imports `database/mysql_schema.sql`, installs backend/frontend dependencies, and can start both servers.
+The setup script asks for MySQL host, port, database name, username, and password. The default hosted MySQL target is `15.134.39.121:3306` with username `mohit`, matching:
+
+```bash
+mysql -h 15.134.39.121 -P 3306 -u mohit -p
+```
+
+It writes `.env`, tests the MySQL connection, imports `database/mysql_schema.sql`, installs backend/frontend dependencies, and can start both servers. If your hosted MySQL requires encrypted connections, answer `Y` when the script asks about SSL.
 
 To run the project later:
 
