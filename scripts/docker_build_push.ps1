@@ -8,24 +8,36 @@ $ErrorActionPreference = "Stop"
 $BackendImage = "$DockerHubUsername/vehicle-service-backend:$ImageTag"
 $FrontendImage = "$DockerHubUsername/vehicle-service-frontend:$ImageTag"
 
+function Invoke-Docker {
+  param(
+    [Parameter(ValueFromRemainingArguments = $true)]
+    [string[]]$Arguments
+  )
+
+  & docker @Arguments
+  if ($LASTEXITCODE -ne 0) {
+    throw "docker $($Arguments -join ' ') failed with exit code $LASTEXITCODE"
+  }
+}
+
 Write-Host "Docker Hub username: $DockerHubUsername"
 Write-Host "Image tag: $ImageTag"
 Write-Host ""
 
-docker info *> $null
+Invoke-Docker info *> $null
 
 Write-Host "Building backend image: $BackendImage"
-docker build -f backend/Dockerfile -t $BackendImage .
+Invoke-Docker build -f backend/Dockerfile -t $BackendImage .
 
 Write-Host "Building frontend image: $FrontendImage"
-docker build -f frontend/Dockerfile -t $FrontendImage .
+Invoke-Docker build -f frontend/Dockerfile -t $FrontendImage .
 
 Write-Host ""
 Write-Host "Pushing backend image..."
-docker push $BackendImage
+Invoke-Docker push $BackendImage
 
 Write-Host "Pushing frontend image..."
-docker push $FrontendImage
+Invoke-Docker push $FrontendImage
 
 Write-Host ""
 Write-Host "Pushed Docker Hub images:"

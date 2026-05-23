@@ -236,6 +236,19 @@ docker login
 .\scripts\docker_build_push.ps1 -DockerHubUsername mohitkumar2007 -ImageTag latest
 ```
 
+If push fails with `insufficient_scope: authorization failed`, Docker is logged into an account that cannot push to the `mohitkumar2007` namespace. Fix by logging in as the Docker Hub owner:
+
+```bash
+docker logout
+docker login -u mohitkumar2007
+```
+
+Or push to the namespace of the account you are actually logged into:
+
+```bash
+bash scripts/docker_build_push.sh YOUR_DOCKERHUB_USERNAME latest
+```
+
 This pushes:
 
 ```text
