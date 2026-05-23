@@ -126,6 +126,42 @@ mechanic / mechanic123
 billing / billing123
 ```
 
+## Vercel Deployment
+
+The repository includes `vercel.json` with two services:
+
+```json
+{
+  "experimentalServices": {
+    "frontend": {
+      "root": "frontend",
+      "routePrefix": "/",
+      "framework": "vite"
+    },
+    "backend": {
+      "root": "backend",
+      "routePrefix": "/_/backend"
+    }
+  }
+}
+```
+
+For Vercel, set these environment variables in the project settings:
+
+```text
+DJANGO_SECRET_KEY
+DJANGO_DEBUG=false
+DJANGO_ALLOWED_HOSTS=.vercel.app
+MYSQL_DATABASE=vehicle_service_db
+MYSQL_USER=mohit
+MYSQL_PASSWORD=your_mysql_password
+MYSQL_HOST=15.134.39.121
+MYSQL_PORT=3306
+MYSQL_SSL=true
+```
+
+In production, the frontend calls the backend through `/_/backend/api`. Locally, it still uses the Vite proxy at `/api`.
+
 ## Push Notes
 
 Do not commit `.env`, `DB_venv`, `node_modules`, `dist`, logs, or Python cache folders. They are ignored by the root `.gitignore`.

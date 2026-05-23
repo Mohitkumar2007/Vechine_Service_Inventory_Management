@@ -1,4 +1,6 @@
-const API_BASE_URL = ((import.meta as any).env?.VITE_API_URL as string | undefined) || '/api';
+const API_BASE_URL =
+  ((import.meta as any).env?.VITE_API_URL as string | undefined) ||
+  ((import.meta as any).env?.PROD ? '/_/backend/api' : '/api');
 
 interface ApiOptions extends RequestInit {
   role?: string;

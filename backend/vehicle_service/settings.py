@@ -10,7 +10,10 @@ SECRET_KEY = os.getenv('DJANGO_SECRET_KEY', 'dbms-project-dev-key')
 DEBUG = os.getenv('DJANGO_DEBUG', 'true').lower() == 'true'
 ALLOWED_HOSTS = [
     host.strip()
-    for host in os.getenv('DJANGO_ALLOWED_HOSTS', 'localhost,127.0.0.1,upchuck-sneer-yeah.ngrok-free.dev').split(',')
+    for host in os.getenv(
+        'DJANGO_ALLOWED_HOSTS',
+        'localhost,127.0.0.1,.vercel.app,upchuck-sneer-yeah.ngrok-free.dev',
+    ).split(',')
     if host.strip()
 ]
 
@@ -42,6 +45,9 @@ CORS_ALLOWED_ORIGINS = [
     'http://localhost:3000',
     'http://127.0.0.1:3000',
     'https://upchuck-sneer-yeah.ngrok-free.dev',
+]
+CORS_ALLOWED_ORIGIN_REGEXES = [
+    r'^https://.*\.vercel\.app$',
 ]
 
 MYSQL_USER = os.getenv('MySQL_user', os.getenv('MYSQL_USER', 'root')).strip('"')
