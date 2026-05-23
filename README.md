@@ -186,6 +186,40 @@ vercel link
 
 `.env.vercel` is ignored by Git, so do not commit the real database password.
 
+## Docker Deployment
+
+The repository includes Docker files for a two-container deployment:
+
+- `backend`: Django API served by Gunicorn on port `8000`
+- `frontend`: Vite production build served by Nginx on port `3000`, with `/api/` proxied to the backend container
+
+Create a local `.env` first:
+
+```bash
+cp .env.example .env
+# edit .env and set MYSQL_PASSWORD plus MYSQL_SSL=true if your hosted MySQL requires SSL
+```
+
+Then build and run:
+
+```bash
+docker compose up --build
+```
+
+Open:
+
+```text
+http://localhost:3000
+```
+
+Backend health/API is available through the frontend container at:
+
+```text
+http://localhost:3000/api/health/
+```
+
+For an Azure VM, make sure inbound port `3000` is allowed in the VM/network security group, or change the frontend port mapping in `docker-compose.yml`.
+
 ## Push Notes
 
 Do not commit `.env`, `DB_venv`, `node_modules`, `dist`, logs, or Python cache folders. They are ignored by the root `.gitignore`.
