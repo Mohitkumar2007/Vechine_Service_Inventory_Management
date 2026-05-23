@@ -220,6 +220,53 @@ http://localhost:3000/api/health/
 
 For an Azure VM, make sure inbound port `3000` is allowed in the VM/network security group, or change the frontend port mapping in `docker-compose.yml`.
 
+### Docker Hub Deployment
+
+Build and push images to Docker Hub from a machine where Docker is installed and logged in:
+
+```bash
+docker login
+bash scripts/docker_build_push.sh mohitkumar2007 latest
+```
+
+PowerShell:
+
+```powershell
+docker login
+.\scripts\docker_build_push.ps1 -DockerHubUsername mohitkumar2007 -ImageTag latest
+```
+
+This pushes:
+
+```text
+mohitkumar2007/vehicle-service-backend:latest
+mohitkumar2007/vehicle-service-frontend:latest
+```
+
+Deploy those pushed images on Azure/Linux:
+
+```bash
+git pull
+cp .env.example .env
+# edit .env and set the real MYSQL_PASSWORD
+bash scripts/docker_deploy_from_hub.sh mohitkumar2007 latest
+```
+
+Or manually:
+
+```bash
+export DOCKERHUB_USERNAME=mohitkumar2007
+export IMAGE_TAG=latest
+docker compose -f docker-compose.hub.yml pull
+docker compose -f docker-compose.hub.yml up -d
+```
+
+Open:
+
+```text
+http://YOUR_AZURE_PUBLIC_IP:3000
+```
+
 ## Push Notes
 
 Do not commit `.env`, `DB_venv`, `node_modules`, `dist`, logs, or Python cache folders. They are ignored by the root `.gitignore`.
