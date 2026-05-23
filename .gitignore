@@ -2,6 +2,7 @@
 .env
 .env.*
 !.env.example
+!.env.vercel.example
 
 # Python
 __pycache__/
@@ -34,4 +35,3 @@ coverage/
 Thumbs.db
 .idea/
 .vscode/
-

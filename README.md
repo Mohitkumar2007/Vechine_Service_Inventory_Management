@@ -162,6 +162,30 @@ MYSQL_SSL=true
 
 In production, the frontend calls the backend through `/_/backend/api`. Locally, it still uses the Vite proxy at `/api`.
 
+You can also upload Vercel environment variables from a local ignored file:
+
+```bash
+cp .env.vercel.example .env.vercel
+# edit .env.vercel and put the real MYSQL_PASSWORD
+npm i -g vercel
+vercel login
+vercel link
+bash scripts/vercel_env_push.sh .env.vercel production
+```
+
+PowerShell:
+
+```powershell
+Copy-Item .env.vercel.example .env.vercel
+# edit .env.vercel and put the real MYSQL_PASSWORD
+npm i -g vercel
+vercel login
+vercel link
+.\scripts\vercel_env_push.ps1 .env.vercel production
+```
+
+`.env.vercel` is ignored by Git, so do not commit the real database password.
+
 ## Push Notes
 
 Do not commit `.env`, `DB_venv`, `node_modules`, `dist`, logs, or Python cache folders. They are ignored by the root `.gitignore`.
