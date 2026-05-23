@@ -7,6 +7,8 @@
     },
     "backend": {
       "root": "backend",
+      "framework": "django",
+      "entrypoint": "manage.py",
       "routePrefix": "/_/backend"
     }
   }
